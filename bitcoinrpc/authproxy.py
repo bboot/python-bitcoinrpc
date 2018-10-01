@@ -44,6 +44,7 @@ import json
 import logging
 import os
 import platform
+import bitcoin
 try:
     import urllib.parse as urlparse
 except ImportError:
@@ -53,6 +54,7 @@ USER_AGENT = "AuthServiceProxy/0.1"
 
 HTTP_TIMEOUT = 30
 
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
 log = logging.getLogger("BitcoinRPC")
 
 try:
@@ -233,7 +235,7 @@ class AuthServiceProxy(object):
             pass
 
         if service_port is None:
-            service_port = 8332#bitcoin.params.RPC_PORT
+            service_port = bitcoin.params.RPC_PORT
         conf['rpcport'] = int(conf.get('rpcport', service_port))
         conf['rpchost'] = conf.get('rpcconnect', 'localhost')
 
@@ -241,8 +243,8 @@ class AuthServiceProxy(object):
             ('http', conf['rpchost'], conf['rpcport']))
 
         cookie_dir = conf.get('datadir', os.path.dirname(btc_conf_file))
-#        if bitcoin.params.NAME != "mainnet":
-#            cookie_dir = os.path.join(cookie_dir, bitcoin.params.NAME)
+        if bitcoin.params.NAME != "mainnet":
+            cookie_dir = os.path.join(cookie_dir, bitcoin.params.NAME)
         cookie_file = os.path.join(cookie_dir, ".cookie")
         authpair = None
         try:
